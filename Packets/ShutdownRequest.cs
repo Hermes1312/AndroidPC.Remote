@@ -3,10 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Network.Packets;
 
-namespace Packets.Volume
+namespace Packets
 {
-    public class VolumeUpRequest
+    public class ShutdownRequest : RequestPacket
     {
         
     }

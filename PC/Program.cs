@@ -17,7 +17,19 @@ namespace PC
             Application.SetHighDpiMode(HighDpiMode.SystemAware);
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
-            Application.Run(new Form1());
+
+            VolumeChanger.Mute();
+            //Application.Run(new PcApplicationContext());
+        }
+    }
+
+    class PcApplicationContext : ApplicationContext
+    {
+
+
+        public PcApplicationContext()
+        {
+            
         }
     }
 }
