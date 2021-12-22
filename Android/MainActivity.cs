@@ -1,14 +1,10 @@
-﻿using System;
-using Android.App;
+﻿using Android.App;
 using Android.OS;
 using Android.Runtime;
 using Android.Views;
-using AndroidX.AppCompat.Widget;
 using AndroidX.AppCompat.App;
-using Google.Android.Material.FloatingActionButton;
-using Google.Android.Material.Snackbar;
 
-namespace Android_Pilot_PC
+namespace Android
 {
     [Activity(Label = "@string/app_name", Theme = "@style/Theme.MaterialComponents.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
