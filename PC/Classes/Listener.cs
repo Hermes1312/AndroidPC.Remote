@@ -40,7 +40,6 @@ namespace PC
 
             if (connectionType == Network.Enums.ConnectionType.TCP)
             {
-                connection.RegisterStaticPacketHandler<HandshakeRequest>(HandshakeRequestHandler);
                 connection.RegisterStaticPacketHandler<VolumeRequest>(VolumeRequestHandler);
                 connection.RegisterStaticPacketHandler<PausePlayRequest>(PausePlayRequestHandler);
                 connection.RegisterStaticPacketHandler<ShutdownRequest>(ShutdownRequestHandler);
@@ -60,10 +59,5 @@ namespace PC
         private static void VolumeRequestHandler(VolumeRequest packet, Connection connection) 
             => Functions.SetVolume(packet.Direction);
 
-        private static void HandshakeRequestHandler(HandshakeRequest packet, Connection connection) =>
-            connection.Send(
-                packet.Welcome == "AaaEeeYyyAaaOooEeeNo"
-                    ? new HandshakeResponse(true, packet)
-                    : new HandshakeResponse(false, packet), connection);
     }
 }

@@ -18,8 +18,10 @@ namespace PC
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
 
-            VolumeChanger.Mute();
-            //Application.Run(new PcApplicationContext());
+            new Listener(1122).Start();
+            
+
+            Application.Run(new PcApplicationContext());
         }
     }
 
