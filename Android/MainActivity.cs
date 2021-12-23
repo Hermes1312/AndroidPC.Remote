@@ -10,13 +10,15 @@ using AndroidX.AppCompat.Widget;
 using AndroidX.AppCompat.App;
 using Google.Android.Material.FloatingActionButton;
 using Google.Android.Material.Snackbar;
+using Network.Packets;
+using Packets;
 
 namespace Android
 {
     [Activity(Label = "@string/app_name", Theme = "@style/Theme.MaterialComponents.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        private Client _client = null;
+        private Client? _client = null;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
@@ -26,7 +28,7 @@ namespace Android
 
             var ip = FindViewById<TextView>(Resource.Id.ipText).Text;
 
-            /*if (!string.IsNullOrEmpty(ip))
+            if (!string.IsNullOrEmpty(ip))
             {
                 try
                 {
@@ -36,11 +38,14 @@ namespace Android
                 catch (Exception)
                 {
                 }
-            }*/
+            }
 
-            /*var statusWatcherThread = new Thread(StatusWatcher);
-            statusWatcherThread.IsBackground = true;
-            statusWatcherThread.Start();*/
+            var statusWatcherThread = new Thread(StatusWatcher)
+            {
+                IsBackground = true
+            };
+
+            statusWatcherThread.Start();
 
             FindViewById<Button>(Resource.Id.connect).Click += OnConnectClicked;
             FindViewById<Button>(Resource.Id.shutdown).Click += OnShutdownClicked;
@@ -55,20 +60,24 @@ namespace Android
 
             while (true)
             {
-                if (_client != null)
+                if (_client.ClientConnectionContainer != null)
                 {
-                    if (_client.ClientConnectionContainer.IsAlive_TCP)
+                    try
                     {
+                        _client.ClientConnectionContainer.SendPing();
+
                         statusControl.Text = "CONNECTED!";
                         statusControl.SetTextColor(Color.Green);
                     }
 
-                    else
+                    catch (Exception)
                     {
                         statusControl.Text = "NOT CONNECTED!";
                         statusControl.SetTextColor(Color.Red);
                     }
                 }
+
+                Thread.Sleep(10);
             }
         }
 
@@ -80,25 +89,16 @@ namespace Android
                 _client = new Client(FindViewById<TextView>(Resource.Id.ipText).Text);
         }
 
-        private static void OnShutdownClicked(object sender, EventArgs e)
-        {
+        private void SendTcpPacket(Packet packet) 
+            => _client?.ClientConnectionContainer.Send(packet);
 
-        }
+        private void OnShutdownClicked(object sender, EventArgs e) => SendTcpPacket(new ShutdownRequest());
 
-        private static void OnVolUpClicked(object sender, EventArgs e)
-        {
+        private void OnVolUpClicked(object sender, EventArgs e) => SendTcpPacket(new VolumeRequest(1));
 
-        }
+        private void OnVolDownClicked(object sender, EventArgs e) => SendTcpPacket(new VolumeRequest(-1));
 
-        private static void OnVolDownClicked(object sender, EventArgs e)
-        {
-
-        }
-
-        private static void OnPausePlayClicked(object sender, EventArgs e)
-        {
-
-        }
+        private void OnPausePlayClicked(object sender, EventArgs e) => SendTcpPacket(new PausePlayRequest());
 
         public override void OnRequestPermissionsResult(int requestCode, string[] permissions, [GeneratedEnum] Android.Content.PM.Permission[] grantResults)
         {

@@ -23,7 +23,7 @@ namespace Android
 
         public void Connect()
         {
-            ClientConnectionContainer = ConnectionFactory.CreateSecureClientConnectionContainer(_ip, 1122);
+            ClientConnectionContainer = ConnectionFactory.CreateClientConnectionContainer(_ip, 1122);
 
             ClientConnectionContainer.AutoReconnect = false;
             ClientConnectionContainer.ReconnectInterval = 10000;
@@ -42,11 +42,6 @@ namespace Android
             connection.KeepAlive = true;
             connection.EnableLogging = true;
             connection.TIMEOUT = 60000;
-
-            if (connectionType == Network.Enums.ConnectionType.TCP)
-            {
-
-            }
         }
 
         public void SendShutdown() 

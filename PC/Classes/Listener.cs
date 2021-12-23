@@ -15,10 +15,10 @@ namespace PC
 
         public Listener(int port)
         {
-            Server = ConnectionFactory.CreateSecureServerConnectionContainer(port, start: false);
+            Server = ConnectionFactory.CreateServerConnectionContainer(port, start: false);
             Server.ConnectionEstablished += ConnectionEstablished;
             Server.ConnectionLost += ConnectionLost;
-            Server.AllowUDPConnections = false;
+            Server.AllowUDPConnections = true;
         }
 
         public void Start() 
@@ -56,8 +56,11 @@ namespace PC
         private static void PausePlayRequestHandler(PausePlayRequest packet, Connection connection) 
             => Functions.PausePlay();
 
-        private static void VolumeRequestHandler(VolumeRequest packet, Connection connection) 
-            => Functions.SetVolume(packet.Direction);
+        private static void VolumeRequestHandler(VolumeRequest packet, Connection connection)
+        {
+            Functions.SetVolume(packet.Direction);
+            connection.Send(new VolumeResponse(true, packet), connection);
+        } 
 
     }
 }
