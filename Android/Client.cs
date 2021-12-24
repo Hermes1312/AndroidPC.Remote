@@ -8,7 +8,7 @@ using System.Threading.Tasks;
 using Network;
 using Packets;
 
-namespace Android
+namespace android.remote.pilot
 {
     public class Client
     {
@@ -43,14 +43,5 @@ namespace Android
             connection.EnableLogging = true;
             connection.TIMEOUT = 60000;
         }
-
-        public void SendShutdown() 
-            => ClientConnectionContainer.Send(new ShutdownRequest(), ClientConnectionContainer);
-
-        public void SendVolume(int direction) 
-            => ClientConnectionContainer.Send(new VolumeRequest(direction), ClientConnectionContainer);
-
-        public void PausePlay()
-            => ClientConnectionContainer.Send(new PausePlayRequest(), ClientConnectionContainer);
     }
 }

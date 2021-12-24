@@ -6,7 +6,6 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Timers;
-using Microsoft.VisualBasic.Devices;
 using Packets;
 
 namespace PC

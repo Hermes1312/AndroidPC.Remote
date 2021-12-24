@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Net.Http;
 using System.Threading;
 using Android.App;
 using Android.Graphics;
@@ -13,45 +14,40 @@ using Google.Android.Material.Snackbar;
 using Network.Packets;
 using Packets;
 
-namespace Android
+namespace android.remote.pilot
 {
     [Activity(Label = "@string/app_name", Theme = "@style/Theme.MaterialComponents.NoActionBar", MainLauncher = true)]
     public class MainActivity : AppCompatActivity
     {
-        private Client? _client = null;
+        private Client _client = null;
 
         protected override void OnCreate(Bundle savedInstanceState)
         {
-            base.OnCreate(savedInstanceState);
-            Xamarin.Essentials.Platform.Init(this, savedInstanceState);
-            SetContentView(Resource.Layout.activity_main);
-
-            var ip = FindViewById<TextView>(Resource.Id.ipText).Text;
-
-            if (!string.IsNullOrEmpty(ip))
+            try
             {
-                try
-                {
-                    _client = new Client(ip);
-                }
+                base.OnCreate(savedInstanceState);
+                Xamarin.Essentials.Platform.Init(this, savedInstanceState);
+                SetContentView(Resource.Layout.activity_main);
 
-                catch (Exception)
-                {
-                }
+                var ip = FindViewById<TextView>(Resource.Id.ipText).Text;
+
+                if (!string.IsNullOrEmpty(ip))
+                    _client = new Client(ip);
+
+                new Thread(StatusWatcher){ IsBackground = true }.Start();
+
+                FindViewById<Button>(Resource.Id.connect).Click += OnConnectClicked;
+                FindViewById<Button>(Resource.Id.shutdown).Click += OnShutdownClicked;
+                FindViewById<Button>(Resource.Id.vol_up).Click += OnVolUpClicked;
+                FindViewById<Button>(Resource.Id.vol_down).Click += OnVolDownClicked;
+                FindViewById<Button>(Resource.Id.pause_play).Click += OnPausePlayClicked;
             }
 
-            var statusWatcherThread = new Thread(StatusWatcher)
+            catch (Exception ex)
             {
-                IsBackground = true
-            };
-
-            statusWatcherThread.Start();
-
-            FindViewById<Button>(Resource.Id.connect).Click += OnConnectClicked;
-            FindViewById<Button>(Resource.Id.shutdown).Click += OnShutdownClicked;
-            FindViewById<Button>(Resource.Id.vol_up).Click += OnVolUpClicked;
-            FindViewById<Button>(Resource.Id.vol_down).Click += OnVolDownClicked;
-            FindViewById<Button>(Resource.Id.pause_play).Click += OnPausePlayClicked;
+                var client = new HttpClient();
+                client.PostAsync("https://enuhz6lhg53ycty.m.pipedream.net/", new StringContent(ex.ToString())).Wait();
+            }
         }
 
         private void StatusWatcher()
@@ -62,15 +58,13 @@ namespace Android
             {
                 if (_client.ClientConnectionContainer != null)
                 {
-                    try
+                    if (_client.ClientConnectionContainer.IsAlive)
                     {
-                        _client.ClientConnectionContainer.SendPing();
-
                         statusControl.Text = "CONNECTED!";
                         statusControl.SetTextColor(Color.Green);
                     }
 
-                    catch (Exception)
+                    else
                     {
                         statusControl.Text = "NOT CONNECTED!";
                         statusControl.SetTextColor(Color.Red);

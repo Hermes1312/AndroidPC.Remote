@@ -38,7 +38,8 @@ namespace PC
             connection.EnableLogging = true;
             connection.TIMEOUT = 60000;
 
-            if (connectionType == Network.Enums.ConnectionType.TCP)
+            // 0 = Tcp
+            if (connectionType == 0)
             {
                 connection.RegisterStaticPacketHandler<VolumeRequest>(VolumeRequestHandler);
                 connection.RegisterStaticPacketHandler<PausePlayRequest>(PausePlayRequestHandler);
@@ -57,10 +58,7 @@ namespace PC
             => Functions.PausePlay();
 
         private static void VolumeRequestHandler(VolumeRequest packet, Connection connection)
-        {
-            Functions.SetVolume(packet.Direction);
-            connection.Send(new VolumeResponse(true, packet), connection);
-        } 
+            => Functions.SetVolume(packet.Direction);
 
     }
 }
